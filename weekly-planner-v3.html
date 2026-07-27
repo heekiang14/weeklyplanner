@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #2c2c2a;
+            line-height: 1.5;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        h2 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0 0 1.5rem 0;
+        }
+        
+        button {
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            opacity: 0.8;
+        }
+        
+        button.primary {
+            background: #185FA5;
+            color: #fff;
+            border: none;
+        }
+        
+        button.success {
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+        }
+        
+        button.danger {
+            background: transparent;
+            color: #d32f2f;
+            border: none;
+        }
+        
+        input, select, textarea {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #185FA5;
+        }
+        
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 2rem;
+        }
+        
+        .month-card {
+            padding: 1.5rem;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .month-card:hover {
+            border-color: #999;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .week-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 800px) {
+            .week-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .week-column {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            transition: all 0.2s;
+        }
+        
+        .week-column.current {
+            background: #e6f1fb;
+            border-color: #185FA5;
+        }
+
+        .week-column.drag-over {
+            background: #c8e6c9;
+            border: 2px dashed #4CAF50;
+            border-color: #4CAF50;
+        }
+        
+        .week-tasks {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .task-card {
+            padding: 12px;
+            background: #fafafa;
+            border-left: 4px solid #999;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .task-card.completed {
+            opacity: 0.6;
+            background: #f0f0f0;
+        }
+
+        .task-card.completed .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-checkbox {
+            margin-top: 2px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .task-card:active {
+            cursor: grabbing;
+            opacity: 0.7;
+        }
+
+        .task-card.priority-high {
+            border-left-color: #d32f2f;
+            background: #ffebee;
+        }
+
+        .task-card.priority-medium {
+            border-left-color: #f57c00;
+            background: #fff3e0;
+        }
+
+        .task-card.priority-low {
+            border-left-color: #388e3c;
+            background: #e8f5e9;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-text {
+            word-break: break-word;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .task-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .task-btn {
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .move-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 4px 0;
+            z-index: 100;
+            min-width: 160px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .move-dropdown.active {
+            display: block;
+        }
+
+        .move-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            text-align: left;
+            font-size: 12px;
+            margin: 0;
+            border-radius: 0;
+        }
+
+        .move-dropdown button:hover {
+            background: #f0f0f0;
+            opacity: 1;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #2c2c2a;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .add-task-btn {
+            padding: 10px 12px;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .overdue-icon {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📅 Weekly Planner</h1>
+        
+        <div id="app"></div>
+    </div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Add New Task</div>
+            
+            <div class="form-group">
+                <label>Task name</label>
+                <input type="text" id="taskName" placeholder="What do you need to do?" />
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="taskPriority">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Due date</label>
+                <input type="date" id="taskDueDate" />
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="taskNotes" placeholder="Add any notes or details..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="planner.closeModal()">Cancel</button>
+                <button class="primary" onclick="planner.saveNewTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class WeeklyPlanner {
+            constructor() {
+                this.view = 'month';
+                this.currentDate = new Date();
+                this.tasks = this.loadTasks();
+                this.draggedTaskId = null;
+                this.pendingWeekStart = null;
+                this.weeks = [];
+                this.render();
+            }
+
+            loadTasks() {
+                const saved = localStorage.getItem('weeklyPlannerTasks');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveTasks() {
+                localStorage.setItem('weeklyPlannerTasks', JSON.stringify(this.tasks));
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                app.innerHTML = '';
+                
+                if (this.view === 'month') {
+                    this.renderMonthView(app);
+                } else {
+                    this.renderWeekView(app);
+                }
+            }
+
+            renderMonthView(container) {
+                const year = this.currentDate.getFullYear();
+                const months = [];
+                
+                for (let i = 0; i < 12; i++) {
+                    const date = new Date(year, i, 1);
+                    months.push({
+                        date,
+                        name: date.toLocaleDateString('en-US', { month: 'short' })
+                    });
+                }
+
+                let html = `
+                    <div class="header-controls">
+                        <h2>${year}</h2>
+                        <div style="display: flex; gap: 12px;">
+                            <button onclick="planner.changeYear(-1)">← Prev Year</button>
+                            <button onclick="planner.changeYear(1)">Next Year →</button>
+                        </div>
+                    </div>
+                    <div class="month-grid">
+                `;
+
+                months.forEach((month) => {
+                    html += `
+                        <div class="month-card" onclick="planner.selectMonth(new Date(${month.date.getFullYear()}, ${month.date.getMonth()}, 1))">
+                            ${month.name}
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            renderWeekView(container) {
+                this.weeks = this.getWeeksForMonth(this.currentDate);
+                const monthName = this.currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+                let html = `
+                    <div class="header-controls">
+                        <button onclick="planner.backToMonth()" class="back-btn">← Back</button>
+                        <h2>${monthName}</h2>
+                    </div>
+                    <div class="week-container">
+                `;
+
+                this.weeks.forEach((week, idx) => {
+                    html += this.renderWeekColumn(week, idx);
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+                
+                // Setup drag and drop after rendering
+                this.setupDragAndDrop();
+            }
+
+            renderWeekColumn(week, idx) {
+                const tasks = this.getTasksForWeek(week.start);
+                const isCurrentWeek = this.isCurrentWeek(week);
+                const weekClass = isCurrentWeek ? 'week-column current' : 'week-column';
+
+                let html = `
+                    <div 
+                        class="${weekClass}" 
+                        id="week-${idx}"
+                    >
+                        <h3>${this.formatDateShort(week.start)} - ${this.formatDateShort(week.end)}</h3>
+                        <div class="week-tasks">
+                `;
+
+                tasks.forEach((task) => {
+                    html += this.renderTaskCard(task, idx);
+                });
+
+                html += `
+                        </div>
+                        <button class="add-task-btn" onclick="planner.openModal(new Date('${week.start.toISOString()}'))">+ Add task</button>
+                    </div>
+                `;
+
+                return html;
+            }
+
+            renderTaskCard(task, weekIdx) {
+                const isOverdue = this.isTaskOverdue(task);
+                const overdueIcon = isOverdue ? '<span class="overdue-icon" title="Overdue">⚠</span>' : '';
+                const dueDateStr = task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+                const completedClass = task.completed ? 'completed' : '';
+
+                let moveOptions = this.weeks.map((week, idx) => 
+                    `<button onclick="planner.moveTaskToWeek(${task.id}, ${idx})">${this.formatDateShort(week.start)}</button>`
+                ).join('');
+
+                return `
+                    <div class="task-card priority-${task.priority} ${completedClass}" draggable="true" data-task-id="${task.id}">
+                        <input 
+                            type="checkbox" 
+                            class="task-checkbox" 
+                            ${task.completed ? 'checked' : ''} 
+                            onchange="planner.toggleTaskCompletion(${task.id})"
+                        />
+                        <div class="task-content">
+                            <div class="task-text">${task.text}</div>
+                            <div class="task-meta">
+                                ${overdueIcon}
+                                <span>${this.priorityLabel(task.priority)}</span>
+                                ${dueDateStr ? `<span>Due: ${dueDateStr}</span>` : ''}
+                            </div>
+                            ${task.notes ? `<div style="margin-top: 8px; font-size: 12px; color: #666; font-style: italic; max-height: 60px; overflow: hidden;">${task.notes}</div>` : ''}
+                        </div>
+                        <div class="task-actions">
+                            <button class="task-btn" onclick="planner.editTask(${task.id})" title="Edit">✎</button>
+                            <button class="task-btn" onclick="planner.toggleMoveMenu(${task.id})" title="Move to another week">⇄</button>
+                            <button class="task-btn danger" onclick="planner.deleteTask(${task.id})" title="Delete">✕</button>
+                            <div class="move-dropdown" id="move-dropdown-${task.id}">
+                                ${moveOptions}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            priorityLabel(priority) {
+                const labels = {
+                    'high': 'High',
+                    'medium': 'Medium',
+                    'low': 'Low'
+                };
+                return labels[priority] || 'Medium';
+            }
+
+            isTaskOverdue(task) {
+                if (!task.dueDate) return false;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const dueDate = new Date(task.dueDate);
+                return dueDate < today;
+            }
+
+            setupDragAndDrop() {
+                const taskCards = document.querySelectorAll('.task-card');
+                const weekColumns = document.querySelectorAll('.week-column');
+
+                taskCards.forEach(card => {
+                    card.addEventListener('dragstart', (e) => {
+                        this.draggedTaskId = parseInt(card.dataset.taskId);
+                        card.style.opacity = '0.5';
+                        e.dataTransfer.effectAllowed = 'move';
+                    });
+
+                    card.addEventListener('dragend', (e) => {
+                        card.style.opacity = '1';
+                        weekColumns.forEach(col => col.classList.remove('drag-over'));
+                    });
+                });
+
+                // Add dragover to document to prevent default
+                document.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+
+                weekColumns.forEach((col, idx) => {
+                    col.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        
+                        // Highlight the week under the cursor
+                        weekColumns.forEach(w => w.classList.remove('drag-over'));
+                        col.classList.add('drag-over');
+                    });
+
+                    col.addEventListener('dragleave', (e) => {
+                        // Only remove if dragging outside all week columns
+                        const relatedTarget = e.relatedTarget;
+                        if (!relatedTarget || !relatedTarget.closest('.week-column')) {
+                            weekColumns.forEach(w => w.classList.remove('drag-over'));
+                        }
+                    });
+
+                    col.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        weekColumns.forEach(w => w.classList.remove('drag-over'));
+                        
+                        if (this.draggedTaskId) {
+                            const targetWeekIdx = Array.from(weekColumns).indexOf(e.currentTarget);
+                            console.log('Dropping on week:', targetWeekIdx, 'Target element:', e.currentTarget);
+                            this.moveTaskToWeek(this.draggedTaskId, targetWeekIdx);
+                        }
+                    });
+                });
+            }
+
+            getWeeksForMonth(date) {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                
+                const weeks = [];
+                let currentWeekStart = new Date(firstDay);
+                currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+
+                while (currentWeekStart <= lastDay) {
+                    const weekEnd = new Date(currentWeekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    weeks.push({
+                        start: new Date(currentWeekStart),
+                        end: weekEnd,
+                    });
+                    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+                }
+
+                return weeks.slice(0, 5);
+            }
+
+            getTasksForWeek(weekStart) {
+                const weekStartDate = new Date(weekStart);
+                weekStartDate.setHours(0, 0, 0, 0);
+                
+                const weekEndDate = new Date(weekStart);
+                weekEndDate.setDate(weekEndDate.getDate() + 7);
+                weekEndDate.setHours(0, 0, 0, 0);
+
+                return this.tasks.filter((task) => {
+                    // Parse the task date string (YYYY-MM-DD) safely
+                    const [year, month, day] = task.date.split('-').map(Number);
+                    const taskDate = new Date(year, month - 1, day);
+                    taskDate.setHours(0, 0, 0, 0);
+                    
+                    return taskDate >= weekStartDate && taskDate < weekEndDate;
+                }).sort((a, b) => {
+                    // Sort by priority
+                    const priorityOrder = { high: 0, medium: 1, low: 2 };
+                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                });
+            }
+
+            isCurrentWeek(week) {
+                const now = new Date();
+                return now >= week.start && now < new Date(week.start.getTime() + 7 * 24 * 60 * 60 * 1000);
+            }
+
+            formatDateShort(date) {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+
+            changeYear(delta) {
+                this.currentDate.setFullYear(this.currentDate.getFullYear() + delta);
+                this.render();
+            }
+
+            selectMonth(date) {
+                this.currentDate = date;
+                this.view = 'week';
+                this.render();
+            }
+
+            backToMonth() {
+                this.view = 'month';
+                this.render();
+            }
+
+            toggleMoveMenu(taskId) {
+                const menu = document.getElementById(`move-dropdown-${taskId}`);
+                const allMenus = document.querySelectorAll('.move-dropdown');
+                
+                allMenus.forEach(m => {
+                    if (m.id !== `move-dropdown-${taskId}`) {
+                        m.classList.remove('active');
+                    }
+                });
+
+                if (menu) {
+                    menu.classList.toggle('active');
+                }
+            }
+
+            moveTaskToWeek(taskId, weekIdx) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task && this.weeks[weekIdx]) {
+                    const weekStart = this.weeks[weekIdx].start;
+                    const dateString = weekStart.getFullYear() + '-' + 
+                                       String(weekStart.getMonth() + 1).padStart(2, '0') + '-' + 
+                                       String(weekStart.getDate()).padStart(2, '0');
+                    task.date = dateString;
+                    this.saveTasks();
+                    this.render();
+                }
+            }
+
+            openModal(weekStart) {
+                this.pendingWeekStart = weekStart;
+                document.getElementById('taskModal').classList.add('active');
+                document.getElementById('taskName').focus();
+            }
+
+            closeModal() {
+                document.getElementById('taskModal').classList.remove('active');
+                document.getElementById('taskName').value = '';
+                document.getElementById('taskPriority').value = 'medium';
+                document.getElementById('taskDueDate').value = '';
+                document.getElementById('taskNotes').value = '';
+                this.pendingWeekStart = null;
+            }
+
+            saveNewTask() {
+                const name = document.getElementById('taskName').value.trim();
+                const priority = document.getElementById('taskPriority').value;
+                const dueDate = document.getElementById('taskDueDate').value;
+                const notes = document.getElementById('taskNotes').value.trim();
+
+                if (!name) {
+                    alert('Please enter a task name');
+                    return;
+                }
+
+                // Make sure we're using the pendingWeekStart date correctly
+                const taskDate = new Date(this.pendingWeekStart);
+                const dateString = taskDate.getFullYear() + '-' + 
+                                   String(taskDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                   String(taskDate.getDate()).padStart(2, '0');
+
+                this.tasks.push({
+                    id: Date.now(),
+                    date: dateString,
+                    text: name,
+                    priority: priority,
+                    dueDate: dueDate || null,
+                    notes: notes || null,
+                    completed: false
+                });
+
+                this.saveTasks();
+                this.closeModal();
+                this.render();
+            }
+
+            editTask(taskId) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) {
+                    document.getElementById('taskName').value = task.text;
+                    document.getElementById('taskPriority').value = task.priority;
+                    document.getElementById('taskDueDate').value = task.dueDate || '';
+                    document.getElementById('taskNotes').value = task.notes || '';
+                    
+                    this.pendingWeekStart = new Date(task.date);
+                    
+                    const modal = document.getElementById('taskModal');
+                    modal.querySelector('.modal-header').textContent = 'Edit Task';
+                    const btn = modal.querySelector('.primary');
+                    btn.textContent = 'Save Changes';
+                    btn.onclick = () => this.saveEditedTask(taskId);
+                    
+                    modal.classList.add('active');
+                    document.getElementById('taskName').focus();
+                }
+            }
+
+            saveEditedTask(taskId) {
+                const name = document.getElementById('taskName').value.trim();
+                const priority = document.getElementById('taskPriority').value;
+                const dueDate = document.getElementById('taskDueDate').value;
+                const notes = document.getElementById('taskNotes').value.trim();
+
+                if (!name) {
+                    alert('Please enter a task name');
+                    return;
+                }
+
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.text = name;
+                    task.priority = priority;
+                    task.dueDate = dueDate || null;
+                    task.notes = notes || null;
+                    this.saveTasks();
+                }
+
+                this.closeModal();
+                
+                // Reset modal to add mode
+                const modal = document.getElementById('taskModal');
+                modal.querySelector('.modal-header').textContent = 'Add New Task';
+                const btn = modal.querySelector('.primary');
+                btn.textContent = 'Add Task';
+                btn.onclick = () => this.saveNewTask();
+
+                this.render();
+            }
+
+            deleteTask(taskId) {
+                if (confirm('Delete this task?')) {
+                    this.tasks = this.tasks.filter(t => t.id !== taskId);
+                    this.saveTasks();
+                    this.render();
+                }
+            }
+
+            toggleTaskCompletion(taskId) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = !task.completed;
+                    this.saveTasks();
+                    this.render();
+                }
+            }
+        }
+
+        // Initialize the app
+        const planner = new WeeklyPlanner();
+    </script>
+</body>
+</html>

@@ -12,11 +12,12 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            color: #2c2c2a;
-            line-height: 1.5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #e6f2f8 0%, #e8f7fa 100%);
+            color: #2c3e50;
+            line-height: 1.6;
             padding: 2rem;
+            min-height: 100vh;
         }
         
         .container {
@@ -25,66 +26,96 @@
         }
         
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 2rem;
-            font-weight: 500;
+            font-weight: 700;
+            color: #003580;
+            letter-spacing: 0;
+            background: linear-gradient(135deg, #003580 0%, #d4a574 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         h2 {
-            font-size: 20px;
-            font-weight: 500;
+            font-size: 24px;
+            font-weight: 600;
             margin: 0;
+            color: #003580;
         }
         
         h3 {
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             margin: 0 0 1.5rem 0;
+            color: #2c3e50;
         }
         
         button {
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            background: #fff;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #003580;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            color: #fff;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         button:hover {
-            opacity: 0.8;
+            background: #002347;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(1px);
         }
         
         button.primary {
-            background: #185FA5;
+            background: #c41e3a;
             color: #fff;
-            border: none;
+        }
+        
+        button.primary:hover {
+            background: #a01729;
         }
         
         button.success {
-            background: #4CAF50;
+            background: #2d5016;
             color: #fff;
-            border: none;
+        }
+        
+        button.success:hover {
+            background: #1f3710;
         }
         
         button.danger {
-            background: transparent;
-            color: #d32f2f;
-            border: none;
+            background: #e74c3c;
+            color: #fff;
+        }
+        
+        button.danger:hover {
+            background: #c0392b;
         }
         
         input, select, textarea {
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            padding: 11px 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
             font-size: 14px;
             font-family: inherit;
+            background: #fff;
+            color: #2c3e50;
+            transition: all 0.2s;
         }
         
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #185FA5;
+            border-color: #003580;
+            box-shadow: 0 0 0 3px rgba(0,53,128,0.1);
         }
         
         .month-grid {
@@ -97,18 +128,33 @@
         .month-card {
             padding: 1.5rem;
             background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+            border: 2px solid #d4a574;
+            border-radius: 6px;
             cursor: pointer;
             text-align: center;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,53,128,0.1);
+            color: #003580;
+            position: relative;
+        }
+        
+        .month-card:before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            height: 3px;
+            background: linear-gradient(90deg, #c41e3a, #d4a574, #c41e3a);
+            border-radius: 6px 6px 0 0;
         }
         
         .month-card:hover {
-            border-color: #999;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: #c41e3a;
+            box-shadow: 0 6px 16px rgba(196,30,58,0.15);
+            transform: translateY(-2px);
         }
         
         .header-controls {
@@ -117,15 +163,6 @@
             justify-content: space-between;
             margin-bottom: 2rem;
             gap: 12px;
-        }
-        
-        .back-btn {
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            background: #fff;
-            cursor: pointer;
-            font-size: 14px;
         }
         
         .week-container {
@@ -143,24 +180,38 @@
         
         .week-column {
             background: #fff;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #d4a574;
             border-radius: 8px;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             min-height: 500px;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,53,128,0.08);
+            position: relative;
+        }
+        
+        .week-column:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c41e3a, #d4a574, #003580, #d4a574, #c41e3a);
+            border-radius: 8px 8px 0 0;
         }
         
         .week-column.current {
-            background: #e6f1fb;
-            border-color: #185FA5;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f4f9 100%);
+            border-color: #003580;
+            box-shadow: 0 4px 12px rgba(0,53,128,0.15);
         }
 
         .week-column.drag-over {
-            background: #c8e6c9;
-            border: 2px dashed #4CAF50;
-            border-color: #4CAF50;
+            background: linear-gradient(135deg, #e8f5ff 0%, #dff2ff 100%);
+            border: 2px solid #d4a574;
+            box-shadow: 0 4px 16px rgba(212,165,116,0.2);
         }
         
         .week-tasks {
@@ -173,10 +224,11 @@
         
         .task-card {
             padding: 12px;
-            background: #fafafa;
-            border-left: 4px solid #999;
-            border-radius: 4px;
-            font-size: 14px;
+            background: #fff;
+            border: 1px solid #e0e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: grab;
             display: flex;
             justify-content: space-between;
@@ -184,44 +236,36 @@
             gap: 8px;
             transition: all 0.2s;
             user-select: none;
-        }
-
-        .task-card.completed {
-            opacity: 0.6;
-            background: #f0f0f0;
-        }
-
-        .task-card.completed .task-text {
-            text-decoration: line-through;
-            color: #999;
-        }
-
-        .task-checkbox {
-            margin-top: 2px;
-            cursor: pointer;
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         }
 
         .task-card:active {
             cursor: grabbing;
-            opacity: 0.7;
         }
 
         .task-card.priority-high {
-            border-left-color: #d32f2f;
-            background: #ffebee;
+            border-left: 4px solid #c41e3a;
+            background: linear-gradient(90deg, #fff 0%, #ffe8eb 100%);
         }
 
         .task-card.priority-medium {
-            border-left-color: #f57c00;
-            background: #fff3e0;
+            border-left: 4px solid #d4a574;
+            background: linear-gradient(90deg, #fff 0%, #fdf4ed 100%);
         }
 
         .task-card.priority-low {
-            border-left-color: #388e3c;
-            background: #e8f5e9;
+            border-left: 4px solid #2d5016;
+            background: linear-gradient(90deg, #fff 0%, #f0f8e8 100%);
+        }
+
+        .task-card.completed {
+            opacity: 0.6;
+            background: #f8f9fa;
+        }
+
+        .task-card.completed .task-text {
+            text-decoration: line-through;
+            color: #95a5a6;
         }
 
         .task-content {
@@ -230,16 +274,17 @@
         
         .task-text {
             word-break: break-word;
-            margin-bottom: 4px;
-            font-weight: 500;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #2c3e50;
         }
 
         .task-meta {
             font-size: 12px;
-            color: #666;
+            color: #7f8c8d;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         
@@ -258,18 +303,27 @@
             font-size: 14px;
         }
 
+        .task-checkbox {
+            margin-top: 2px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
         .move-dropdown {
             position: absolute;
             top: 100%;
             right: 0;
             background: #fff;
-            border: 1px solid #ccc;
+            border: 2px solid #d4a574;
             border-radius: 6px;
             padding: 4px 0;
             z-index: 100;
             min-width: 160px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
             display: none;
+            margin-top: 6px;
         }
 
         .move-dropdown.active {
@@ -279,19 +333,24 @@
         .move-dropdown button {
             display: block;
             width: 100%;
-            padding: 8px 12px;
+            padding: 10px 12px;
             border: none;
             background: transparent;
             cursor: pointer;
             text-align: left;
-            font-size: 12px;
+            font-size: 13px;
             margin: 0;
             border-radius: 0;
+            font-weight: 500;
+            font-family: inherit;
+            color: #2c3e50;
+            box-shadow: none;
+            transition: all 0.2s;
         }
 
         .move-dropdown button:hover {
-            background: #f0f0f0;
-            opacity: 1;
+            background: #ffe8eb;
+            color: #c41e3a;
         }
         
         .modal {
@@ -301,7 +360,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.4);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -314,17 +373,32 @@
         .modal-content {
             background: #fff;
             border-radius: 8px;
+            border: 2px solid #d4a574;
             padding: 2rem;
             max-width: 400px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        
+        .modal-content:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c41e3a, #d4a574, #2d5016);
+            border-radius: 8px 8px 0 0;
         }
 
         .modal-header {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 1rem;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #003580;
         }
 
         .form-group {
@@ -333,10 +407,10 @@
 
         .form-group label {
             display: block;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 600;
             margin-bottom: 6px;
-            color: #2c2c2a;
+            color: #2c3e50;
         }
 
         .form-group input,
@@ -358,26 +432,91 @@
         }
 
         .add-task-btn {
-            padding: 10px 12px;
-            background: #f9f9f9;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #666;
+            padding: 12px 14px;
+            background: #2d5016;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #fff;
             cursor: pointer;
+            font-weight: 600;
+            text-transform: capitalize;
+            font-family: inherit;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .add-task-btn:hover {
+            background: #1f3710;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
         .overdue-icon {
-            color: #d32f2f;
+            color: #c41e3a;
             font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #003580;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .sync-status {
+            font-size: 13px;
+            color: #d4a574;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .back-btn {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #2d5016;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #1f3710;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .sync-indicator {
+            font-size: 12px;
+            color: #2d5016;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .error-message {
+            background: #ffe8eb;
+            border: 1px solid #c41e3a;
+            color: #c41e3a;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📅 Weekly Planner</h1>
+        <div class="sync-status" id="syncStatus">🔄 Syncing with database...</div>
+        <div id="errorMessage"></div>
         
-        <div id="app"></div>
+        <div id="app"><div class="loading">Loading...</div></div>
     </div>
 
     <div id="taskModal" class="modal">
@@ -399,8 +538,16 @@
             </div>
 
             <div class="form-group">
-                <label>Due date</label>
-                <input type="date" id="taskDueDate" />
+                <label>Day of week</label>
+                <select id="taskDayOfWeek">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -415,30 +562,90 @@
         </div>
     </div>
 
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHv_vEVnYaG2ecbBLIbX9ADaVlo1UdNZQ",
+            authDomain: "weeklyplanner-80bc1.firebaseapp.com",
+            projectId: "weeklyplanner-80bc1",
+            storageBucket: "weeklyplanner-80bc1.firebasestorage.app",
+            messagingSenderId: "771440100581",
+            appId: "1:771440100581:web:14ad731a988fcb4388800c",
+            measurementId: "G-ZYP3EEK6B4"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+        
+        // Collection name for shared tasks
+        const TASKS_COLLECTION = 'shared_tasks';
+
         class WeeklyPlanner {
             constructor() {
                 this.view = 'month';
                 this.currentDate = new Date();
-                this.tasks = this.loadTasks();
+                this.tasks = [];
                 this.draggedTaskId = null;
                 this.pendingWeekStart = null;
                 this.weeks = [];
-                this.render();
+                this.unsubscribe = null;
+                this.isLoading = true;
+                this.initializeFirebase();
             }
 
-            loadTasks() {
-                const saved = localStorage.getItem('weeklyPlannerTasks');
-                return saved ? JSON.parse(saved) : [];
+            initializeFirebase() {
+                // Set up real-time listener for tasks
+                this.unsubscribe = db.collection(TASKS_COLLECTION).onSnapshot(
+                    (snapshot) => {
+                        this.tasks = [];
+                        snapshot.forEach((doc) => {
+                            this.tasks.push({
+                                id: doc.id,
+                                ...doc.data()
+                            });
+                        });
+                        this.isLoading = false;
+                        this.updateSyncStatus('✅ Synced');
+                        this.render();
+                    },
+                    (error) => {
+                        console.error('Firebase error:', error);
+                        this.showError('Database connection error. Some features may not work.');
+                        this.updateSyncStatus('⚠️ Offline mode');
+                        this.isLoading = false;
+                        this.render();
+                    }
+                );
             }
 
-            saveTasks() {
-                localStorage.setItem('weeklyPlannerTasks', JSON.stringify(this.tasks));
+            updateSyncStatus(status) {
+                const syncEl = document.getElementById('syncStatus');
+                if (syncEl) syncEl.textContent = status;
+            }
+
+            showError(message) {
+                const errorEl = document.getElementById('errorMessage');
+                if (errorEl) {
+                    errorEl.innerHTML = `<div class="error-message">${message}</div>`;
+                    setTimeout(() => {
+                        errorEl.innerHTML = '';
+                    }, 5000);
+                }
             }
 
             render() {
                 const app = document.getElementById('app');
                 app.innerHTML = '';
+                
+                if (this.isLoading) {
+                    app.innerHTML = '<div class="loading">Loading...</div>';
+                    return;
+                }
                 
                 if (this.view === 'month') {
                     this.renderMonthView(app);
@@ -490,6 +697,7 @@
                     <div class="header-controls">
                         <button onclick="planner.backToMonth()" class="back-btn">← Back</button>
                         <h2>${monthName}</h2>
+                        <span class="sync-indicator">👥 Shared</span>
                     </div>
                     <div class="week-container">
                 `;
@@ -501,7 +709,6 @@
                 html += '</div>';
                 container.innerHTML = html;
                 
-                // Setup drag and drop after rendering
                 this.setupDragAndDrop();
             }
 
@@ -533,13 +740,11 @@
             }
 
             renderTaskCard(task, weekIdx) {
-                const isOverdue = this.isTaskOverdue(task);
-                const overdueIcon = isOverdue ? '<span class="overdue-icon" title="Overdue">⚠</span>' : '';
-                const dueDateStr = task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
                 const completedClass = task.completed ? 'completed' : '';
+                const dayOfWeekStr = task.dayOfWeek ? task.dayOfWeek : 'Unassigned';
 
                 let moveOptions = this.weeks.map((week, idx) => 
-                    `<button onclick="planner.moveTaskToWeek(${task.id}, ${idx})">${this.formatDateShort(week.start)}</button>`
+                    `<button onclick="planner.moveTaskToWeek('${task.id}', ${idx})">${this.formatDateShort(week.start)}</button>`
                 ).join('');
 
                 return `
@@ -548,21 +753,20 @@
                             type="checkbox" 
                             class="task-checkbox" 
                             ${task.completed ? 'checked' : ''} 
-                            onchange="planner.toggleTaskCompletion(${task.id})"
+                            onchange="planner.toggleTaskCompletion('${task.id}')"
                         />
                         <div class="task-content">
                             <div class="task-text">${task.text}</div>
                             <div class="task-meta">
-                                ${overdueIcon}
                                 <span>${this.priorityLabel(task.priority)}</span>
-                                ${dueDateStr ? `<span>Due: ${dueDateStr}</span>` : ''}
+                                <span>📅 ${dayOfWeekStr}</span>
                             </div>
-                            ${task.notes ? `<div style="margin-top: 8px; font-size: 12px; color: #666; font-style: italic; max-height: 60px; overflow: hidden;">${task.notes}</div>` : ''}
+                            ${task.notes ? `<div style="margin-top: 8px; font-size: 12px; color: #7f8c8d; font-style: italic; max-height: 60px; overflow: hidden;">${task.notes}</div>` : ''}
                         </div>
                         <div class="task-actions">
-                            <button class="task-btn" onclick="planner.editTask(${task.id})" title="Edit">✎</button>
-                            <button class="task-btn" onclick="planner.toggleMoveMenu(${task.id})" title="Move to another week">⇄</button>
-                            <button class="task-btn danger" onclick="planner.deleteTask(${task.id})" title="Delete">✕</button>
+                            <button class="task-btn" onclick="planner.editTask('${task.id}')" title="Edit">✎</button>
+                            <button class="task-btn" onclick="planner.toggleMoveMenu('${task.id}')" title="Move to another week">⇄</button>
+                            <button class="task-btn danger" onclick="planner.deleteTask('${task.id}')" title="Delete">✕</button>
                             <div class="move-dropdown" id="move-dropdown-${task.id}">
                                 ${moveOptions}
                             </div>
@@ -580,68 +784,7 @@
                 return labels[priority] || 'Medium';
             }
 
-            isTaskOverdue(task) {
-                if (!task.dueDate) return false;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const dueDate = new Date(task.dueDate);
-                return dueDate < today;
-            }
 
-            setupDragAndDrop() {
-                const taskCards = document.querySelectorAll('.task-card');
-                const weekColumns = document.querySelectorAll('.week-column');
-
-                taskCards.forEach(card => {
-                    card.addEventListener('dragstart', (e) => {
-                        this.draggedTaskId = parseInt(card.dataset.taskId);
-                        card.style.opacity = '0.5';
-                        e.dataTransfer.effectAllowed = 'move';
-                    });
-
-                    card.addEventListener('dragend', (e) => {
-                        card.style.opacity = '1';
-                        weekColumns.forEach(col => col.classList.remove('drag-over'));
-                    });
-                });
-
-                // Add dragover to document to prevent default
-                document.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                });
-
-                weekColumns.forEach((col, idx) => {
-                    col.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                        
-                        // Highlight the week under the cursor
-                        weekColumns.forEach(w => w.classList.remove('drag-over'));
-                        col.classList.add('drag-over');
-                    });
-
-                    col.addEventListener('dragleave', (e) => {
-                        // Only remove if dragging outside all week columns
-                        const relatedTarget = e.relatedTarget;
-                        if (!relatedTarget || !relatedTarget.closest('.week-column')) {
-                            weekColumns.forEach(w => w.classList.remove('drag-over'));
-                        }
-                    });
-
-                    col.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        weekColumns.forEach(w => w.classList.remove('drag-over'));
-                        
-                        if (this.draggedTaskId) {
-                            const targetWeekIdx = Array.from(weekColumns).indexOf(e.currentTarget);
-                            console.log('Dropping on week:', targetWeekIdx, 'Target element:', e.currentTarget);
-                            this.moveTaskToWeek(this.draggedTaskId, targetWeekIdx);
-                        }
-                    });
-                });
-            }
 
             getWeeksForMonth(date) {
                 const year = date.getFullYear();
@@ -675,14 +818,12 @@
                 weekEndDate.setHours(0, 0, 0, 0);
 
                 return this.tasks.filter((task) => {
-                    // Parse the task date string (YYYY-MM-DD) safely
                     const [year, month, day] = task.date.split('-').map(Number);
                     const taskDate = new Date(year, month - 1, day);
                     taskDate.setHours(0, 0, 0, 0);
                     
                     return taskDate >= weekStartDate && taskDate < weekEndDate;
                 }).sort((a, b) => {
-                    // Sort by priority
                     const priorityOrder = { high: 0, medium: 1, low: 2 };
                     return priorityOrder[a.priority] - priorityOrder[b.priority];
                 });
@@ -728,16 +869,23 @@
                 }
             }
 
-            moveTaskToWeek(taskId, weekIdx) {
+            async moveTaskToWeek(taskId, weekIdx) {
                 const task = this.tasks.find(t => t.id === taskId);
                 if (task && this.weeks[weekIdx]) {
                     const weekStart = this.weeks[weekIdx].start;
                     const dateString = weekStart.getFullYear() + '-' + 
                                        String(weekStart.getMonth() + 1).padStart(2, '0') + '-' + 
                                        String(weekStart.getDate()).padStart(2, '0');
-                    task.date = dateString;
-                    this.saveTasks();
-                    this.render();
+                    
+                    this.updateSyncStatus('🔄 Updating...');
+                    try {
+                        await db.collection(TASKS_COLLECTION).doc(taskId).update({
+                            date: dateString
+                        });
+                    } catch (error) {
+                        console.error('Error moving task:', error);
+                        this.showError('Failed to move task');
+                    }
                 }
             }
 
@@ -751,15 +899,15 @@
                 document.getElementById('taskModal').classList.remove('active');
                 document.getElementById('taskName').value = '';
                 document.getElementById('taskPriority').value = 'medium';
-                document.getElementById('taskDueDate').value = '';
+                document.getElementById('taskDayOfWeek').value = 'Monday';
                 document.getElementById('taskNotes').value = '';
                 this.pendingWeekStart = null;
             }
 
-            saveNewTask() {
+            async saveNewTask() {
                 const name = document.getElementById('taskName').value.trim();
                 const priority = document.getElementById('taskPriority').value;
-                const dueDate = document.getElementById('taskDueDate').value;
+                const dayOfWeek = document.getElementById('taskDayOfWeek').value;
                 const notes = document.getElementById('taskNotes').value.trim();
 
                 if (!name) {
@@ -767,25 +915,29 @@
                     return;
                 }
 
-                // Make sure we're using the pendingWeekStart date correctly
                 const taskDate = new Date(this.pendingWeekStart);
                 const dateString = taskDate.getFullYear() + '-' + 
                                    String(taskDate.getMonth() + 1).padStart(2, '0') + '-' + 
                                    String(taskDate.getDate()).padStart(2, '0');
 
-                this.tasks.push({
-                    id: Date.now(),
+                const newTask = {
                     date: dateString,
                     text: name,
                     priority: priority,
-                    dueDate: dueDate || null,
+                    dayOfWeek: dayOfWeek,
                     notes: notes || null,
-                    completed: false
-                });
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
 
-                this.saveTasks();
-                this.closeModal();
-                this.render();
+                this.updateSyncStatus('🔄 Saving...');
+                try {
+                    await db.collection(TASKS_COLLECTION).add(newTask);
+                    this.closeModal();
+                } catch (error) {
+                    console.error('Error saving task:', error);
+                    this.showError('Failed to save task');
+                }
             }
 
             editTask(taskId) {
@@ -793,7 +945,7 @@
                 if (task) {
                     document.getElementById('taskName').value = task.text;
                     document.getElementById('taskPriority').value = task.priority;
-                    document.getElementById('taskDueDate').value = task.dueDate || '';
+                    document.getElementById('taskDayOfWeek').value = task.dayOfWeek || 'Monday';
                     document.getElementById('taskNotes').value = task.notes || '';
                     
                     this.pendingWeekStart = new Date(task.date);
@@ -809,10 +961,10 @@
                 }
             }
 
-            saveEditedTask(taskId) {
+            async saveEditedTask(taskId) {
                 const name = document.getElementById('taskName').value.trim();
                 const priority = document.getElementById('taskPriority').value;
-                const dueDate = document.getElementById('taskDueDate').value;
+                const dayOfWeek = document.getElementById('taskDayOfWeek').value;
                 const notes = document.getElementById('taskNotes').value.trim();
 
                 if (!name) {
@@ -820,47 +972,105 @@
                     return;
                 }
 
-                const task = this.tasks.find(t => t.id === taskId);
-                if (task) {
-                    task.text = name;
-                    task.priority = priority;
-                    task.dueDate = dueDate || null;
-                    task.notes = notes || null;
-                    this.saveTasks();
+                this.updateSyncStatus('🔄 Updating...');
+                try {
+                    await db.collection(TASKS_COLLECTION).doc(taskId).update({
+                        text: name,
+                        priority: priority,
+                        dayOfWeek: dayOfWeek,
+                        notes: notes || null
+                    });
+                } catch (error) {
+                    console.error('Error updating task:', error);
+                    this.showError('Failed to update task');
                 }
 
                 this.closeModal();
                 
-                // Reset modal to add mode
                 const modal = document.getElementById('taskModal');
                 modal.querySelector('.modal-header').textContent = 'Add New Task';
                 const btn = modal.querySelector('.primary');
                 btn.textContent = 'Add Task';
                 btn.onclick = () => this.saveNewTask();
-
-                this.render();
             }
 
-            deleteTask(taskId) {
+            async deleteTask(taskId) {
                 if (confirm('Delete this task?')) {
-                    this.tasks = this.tasks.filter(t => t.id !== taskId);
-                    this.saveTasks();
-                    this.render();
+                    this.updateSyncStatus('🔄 Deleting...');
+                    try {
+                        await db.collection(TASKS_COLLECTION).doc(taskId).delete();
+                    } catch (error) {
+                        console.error('Error deleting task:', error);
+                        this.showError('Failed to delete task');
+                    }
                 }
             }
 
-            toggleTaskCompletion(taskId) {
+            async toggleTaskCompletion(taskId) {
                 const task = this.tasks.find(t => t.id === taskId);
                 if (task) {
-                    task.completed = !task.completed;
-                    this.saveTasks();
-                    this.render();
+                    this.updateSyncStatus('🔄 Updating...');
+                    try {
+                        await db.collection(TASKS_COLLECTION).doc(taskId).update({
+                            completed: !task.completed
+                        });
+                    } catch (error) {
+                        console.error('Error updating task:', error);
+                        this.showError('Failed to update task');
+                    }
                 }
+            }
+
+            setupDragAndDrop() {
+                const taskCards = document.querySelectorAll('.task-card');
+                const weekColumns = document.querySelectorAll('.week-column');
+
+                taskCards.forEach(card => {
+                    card.addEventListener('dragstart', (e) => {
+                        this.draggedTaskId = card.dataset.taskId;
+                        card.style.opacity = '0.5';
+                        e.dataTransfer.effectAllowed = 'move';
+                    });
+
+                    card.addEventListener('dragend', (e) => {
+                        card.style.opacity = '1';
+                        weekColumns.forEach(col => col.classList.remove('drag-over'));
+                    });
+                });
+
+                weekColumns.forEach((col, idx) => {
+                    col.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        weekColumns.forEach(w => w.classList.remove('drag-over'));
+                        col.classList.add('drag-over');
+                    });
+
+                    col.addEventListener('dragleave', (e) => {
+                        const relatedTarget = e.relatedTarget;
+                        if (!relatedTarget || !relatedTarget.closest('.week-column')) {
+                            weekColumns.forEach(w => w.classList.remove('drag-over'));
+                        }
+                    });
+
+                    col.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        weekColumns.forEach(w => w.classList.remove('drag-over'));
+                        
+                        if (this.draggedTaskId) {
+                            this.moveTaskToWeek(this.draggedTaskId, idx);
+                        }
+                    });
+                });
             }
         }
 
-        // Initialize the app
-        const planner = new WeeklyPlanner();
+        // Initialize the app when page loads
+        let planner;
+        window.addEventListener('DOMContentLoaded', () => {
+            planner = new WeeklyPlanner();
+        });
     </script>
 </body>
 </html>

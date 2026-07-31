@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weekly Planner</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
     <style>
         * {
             margin: 0;
@@ -30,7 +32,6 @@
             margin-bottom: 2rem;
             font-weight: 700;
             color: #003580;
-            letter-spacing: 0;
             background: linear-gradient(135deg, #003580 0%, #d4a574 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -76,7 +77,6 @@
         
         button.primary {
             background: #c41e3a;
-            color: #fff;
         }
         
         button.primary:hover {
@@ -85,7 +85,6 @@
         
         button.success {
             background: #2d5016;
-            color: #fff;
         }
         
         button.success:hover {
@@ -94,7 +93,6 @@
         
         button.danger {
             background: #e74c3c;
-            color: #fff;
         }
         
         button.danger:hover {
@@ -451,11 +449,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
-        .overdue-icon {
-            color: #c41e3a;
-            font-weight: bold;
-        }
-
         .loading {
             text-align: center;
             padding: 2rem;
@@ -515,7 +508,6 @@
         <h1>📅 Weekly Planner</h1>
         <div class="sync-status" id="syncStatus">🔄 Syncing with database...</div>
         <div id="errorMessage"></div>
-        
         <div id="app"><div class="loading">Loading...</div></div>
     </div>
 
@@ -562,12 +554,7 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
-
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBHv_vEVnYaG2ecbBLIbX9ADaVlo1UdNZQ",
             authDomain: "weeklyplanner-80bc1.firebaseapp.com",
@@ -578,11 +565,8 @@
             measurementId: "G-ZYP3EEK6B4"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(app);
-        
-        // Collection name for shared tasks
         const TASKS_COLLECTION = 'shared_tasks';
 
         class WeeklyPlanner {
@@ -599,7 +583,6 @@
             }
 
             initializeFirebase() {
-                // Set up real-time listener for tasks
                 this.unsubscribe = db.collection(TASKS_COLLECTION).onSnapshot(
                     (snapshot) => {
                         this.tasks = [];
@@ -615,7 +598,7 @@
                     },
                     (error) => {
                         console.error('Firebase error:', error);
-                        this.showError('Database connection error. Some features may not work.');
+                        this.showError('Database connection error: ' + error.message);
                         this.updateSyncStatus('⚠️ Offline mode');
                         this.isLoading = false;
                         this.render();
@@ -634,7 +617,7 @@
                     errorEl.innerHTML = `<div class="error-message">${message}</div>`;
                     setTimeout(() => {
                         errorEl.innerHTML = '';
-                    }, 5000);
+                    }, 10000);
                 }
             }
 
@@ -718,10 +701,7 @@
                 const weekClass = isCurrentWeek ? 'week-column current' : 'week-column';
 
                 let html = `
-                    <div 
-                        class="${weekClass}" 
-                        id="week-${idx}"
-                    >
+                    <div class="${weekClass}" id="week-${idx}">
                         <h3>${this.formatDateShort(week.start)} - ${this.formatDateShort(week.end)}</h3>
                         <div class="week-tasks">
                 `;
@@ -741,7 +721,7 @@
 
             renderTaskCard(task, weekIdx) {
                 const completedClass = task.completed ? 'completed' : '';
-                const dayOfWeekStr = task.dayOfWeek ? task.dayOfWeek : 'Unassigned';
+                const dayOfWeekStr = task.dayOfWeek || 'Unassigned';
 
                 let moveOptions = this.weeks.map((week, idx) => 
                     `<button onclick="planner.moveTaskToWeek('${task.id}', ${idx})">${this.formatDateShort(week.start)}</button>`
@@ -749,12 +729,7 @@
 
                 return `
                     <div class="task-card priority-${task.priority} ${completedClass}" draggable="true" data-task-id="${task.id}">
-                        <input 
-                            type="checkbox" 
-                            class="task-checkbox" 
-                            ${task.completed ? 'checked' : ''} 
-                            onchange="planner.toggleTaskCompletion('${task.id}')"
-                        />
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="planner.toggleTaskCompletion('${task.id}')" />
                         <div class="task-content">
                             <div class="task-text">${task.text}</div>
                             <div class="task-meta">
@@ -765,26 +740,18 @@
                         </div>
                         <div class="task-actions">
                             <button class="task-btn" onclick="planner.editTask('${task.id}')" title="Edit">✎</button>
-                            <button class="task-btn" onclick="planner.toggleMoveMenu('${task.id}')" title="Move to another week">⇄</button>
+                            <button class="task-btn" onclick="planner.toggleMoveMenu('${task.id}')" title="Move">⇄</button>
                             <button class="task-btn danger" onclick="planner.deleteTask('${task.id}')" title="Delete">✕</button>
-                            <div class="move-dropdown" id="move-dropdown-${task.id}">
-                                ${moveOptions}
-                            </div>
+                            <div class="move-dropdown" id="move-dropdown-${task.id}">${moveOptions}</div>
                         </div>
                     </div>
                 `;
             }
 
             priorityLabel(priority) {
-                const labels = {
-                    'high': 'High',
-                    'medium': 'Medium',
-                    'low': 'Low'
-                };
+                const labels = { 'high': 'High', 'medium': 'Medium', 'low': 'Low' };
                 return labels[priority] || 'Medium';
             }
-
-
 
             getWeeksForMonth(date) {
                 const year = date.getFullYear();
@@ -856,17 +823,10 @@
 
             toggleMoveMenu(taskId) {
                 const menu = document.getElementById(`move-dropdown-${taskId}`);
-                const allMenus = document.querySelectorAll('.move-dropdown');
-                
-                allMenus.forEach(m => {
-                    if (m.id !== `move-dropdown-${taskId}`) {
-                        m.classList.remove('active');
-                    }
+                document.querySelectorAll('.move-dropdown').forEach(m => {
+                    if (m.id !== `move-dropdown-${taskId}`) m.classList.remove('active');
                 });
-
-                if (menu) {
-                    menu.classList.toggle('active');
-                }
+                if (menu) menu.classList.toggle('active');
             }
 
             async moveTaskToWeek(taskId, weekIdx) {
@@ -879,12 +839,9 @@
                     
                     this.updateSyncStatus('🔄 Updating...');
                     try {
-                        await db.collection(TASKS_COLLECTION).doc(taskId).update({
-                            date: dateString
-                        });
+                        await db.collection(TASKS_COLLECTION).doc(taskId).update({ date: dateString });
                     } catch (error) {
-                        console.error('Error moving task:', error);
-                        this.showError('Failed to move task');
+                        this.showError('Failed to move task: ' + error.message);
                     }
                 }
             }
@@ -935,8 +892,7 @@
                     await db.collection(TASKS_COLLECTION).add(newTask);
                     this.closeModal();
                 } catch (error) {
-                    console.error('Error saving task:', error);
-                    this.showError('Failed to save task');
+                    this.showError('Failed to save task: ' + error.message);
                 }
             }
 
@@ -981,8 +937,7 @@
                         notes: notes || null
                     });
                 } catch (error) {
-                    console.error('Error updating task:', error);
-                    this.showError('Failed to update task');
+                    this.showError('Failed to update task: ' + error.message);
                 }
 
                 this.closeModal();
@@ -1000,8 +955,7 @@
                     try {
                         await db.collection(TASKS_COLLECTION).doc(taskId).delete();
                     } catch (error) {
-                        console.error('Error deleting task:', error);
-                        this.showError('Failed to delete task');
+                        this.showError('Failed to delete task: ' + error.message);
                     }
                 }
             }
@@ -1015,8 +969,7 @@
                             completed: !task.completed
                         });
                     } catch (error) {
-                        console.error('Error updating task:', error);
-                        this.showError('Failed to update task');
+                        this.showError('Failed to update task: ' + error.message);
                     }
                 }
             }
@@ -1047,8 +1000,7 @@
                     });
 
                     col.addEventListener('dragleave', (e) => {
-                        const relatedTarget = e.relatedTarget;
-                        if (!relatedTarget || !relatedTarget.closest('.week-column')) {
+                        if (!e.relatedTarget || !e.relatedTarget.closest('.week-column')) {
                             weekColumns.forEach(w => w.classList.remove('drag-over'));
                         }
                     });
@@ -1066,7 +1018,6 @@
             }
         }
 
-        // Initialize the app when page loads
         let planner;
         window.addEventListener('DOMContentLoaded', () => {
             planner = new WeeklyPlanner();

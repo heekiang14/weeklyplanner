@@ -47,9 +47,10 @@
         
         h3 {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 500;
             margin: 0 0 1.5rem 0;
-            color: #2c3e50;
+            color: #6b5344;
+            letter-spacing: 0.2px;
         }
         
         button {
@@ -77,11 +78,13 @@
         }
         
         button.primary {
-            background: #c41e3a;
+            background: rgba(196, 30, 58, 0.8);
+            border: 1px solid rgba(196, 30, 58, 0.5);
         }
         
         button.primary:hover {
-            background: #a01729;
+            background: rgba(196, 30, 58, 0.95);
+            box-shadow: 0 4px 10px rgba(196, 30, 58, 0.2);
         }
         
         button.success {
@@ -102,19 +105,19 @@
         
         input, select, textarea {
             padding: 11px 12px;
-            border: 1px solid #d0d7de;
-            border-radius: 4px;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
-            background: #fff;
-            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            color: #6b5344;
             transition: all 0.2s;
         }
         
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #003580;
-            box-shadow: 0 0 0 3px rgba(0,53,128,0.1);
+            border-color: rgba(212, 165, 116, 0.6);
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
         }
         
         .month-grid {
@@ -180,15 +183,15 @@
         }
         
         .week-column {
-            background: #fff;
-            border: 2px solid #d4a574;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 12px;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             min-height: 500px;
             transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0,53,128,0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             position: relative;
         }
         
@@ -198,21 +201,22 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #c41e3a, #d4a574, #003580, #d4a574, #c41e3a);
-            border-radius: 8px 8px 0 0;
+            height: 2px;
+            background: linear-gradient(90deg, #d4a574 0%, #c41e3a 50%, #2d5016 100%);
+            border-radius: 12px 12px 0 0;
+            opacity: 0.5;
         }
         
         .week-column.current {
-            background: linear-gradient(135deg, #f0f7ff 0%, #e6f4f9 100%);
-            border-color: #003580;
-            box-shadow: 0 4px 12px rgba(0,53,128,0.15);
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(212, 165, 116, 0.6);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
         .week-column.drag-over {
-            background: linear-gradient(135deg, #e8f5ff 0%, #dff2ff 100%);
-            border: 2px solid #d4a574;
-            box-shadow: 0 4px 16px rgba(212,165,116,0.2);
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(212, 165, 116, 0.5);
+            box-shadow: 0 6px 16px rgba(212, 165, 116, 0.15);
         }
         
         .week-tasks {
@@ -226,8 +230,8 @@
         .task-card {
             padding: 12px;
             background: #fff;
-            border: 1px solid #e0e8f0;
-            border-radius: 6px;
+            border: 1px solid rgba(224, 232, 240, 0.6);
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 500;
             cursor: grab;
@@ -237,7 +241,7 @@
             gap: 8px;
             transition: all 0.2s;
             user-select: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         .task-card:active {
@@ -245,18 +249,18 @@
         }
 
         .task-card.mode-together {
-            border-left: 4px solid #d4639a;
-            background: linear-gradient(90deg, #fff 0%, #fce8f3 100%);
+            border-left: 3px solid rgba(212, 99, 154, 0.6);
+            background: linear-gradient(90deg, #fff 0%, rgba(252, 232, 243, 0.6) 100%);
         }
 
         .task-card.mode-personal {
-            border-left: 4px solid #d4a574;
-            background: linear-gradient(90deg, #fff 0%, #fef9e8 100%);
+            border-left: 3px solid rgba(212, 165, 116, 0.6);
+            background: linear-gradient(90deg, #fff 0%, rgba(254, 249, 232, 0.6) 100%);
         }
 
         .task-card.completed {
-            opacity: 0.6;
-            background: #f8f9fa;
+            opacity: 0.65;
+            background: rgba(248, 249, 250, 0.7);
         }
 
         .task-card.completed .task-text {
@@ -272,12 +276,12 @@
             word-break: break-word;
             margin-bottom: 6px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #6b5344;
         }
 
         .task-meta {
             font-size: 12px;
-            color: #7f8c8d;
+            color: #8b7355;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -318,13 +322,13 @@
             position: absolute;
             top: 100%;
             right: 0;
-            background: #fff;
-            border: 2px solid #d4a574;
-            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 8px;
             padding: 4px 0;
             z-index: 100;
             min-width: 160px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
             display: none;
             margin-top: 6px;
         }
@@ -346,14 +350,14 @@
             border-radius: 0;
             font-weight: 500;
             font-family: inherit;
-            color: #2c3e50;
+            color: #6b5344;
             box-shadow: none;
             transition: all 0.2s;
         }
 
         .move-dropdown button:hover {
-            background: #ffe8eb;
-            color: #c41e3a;
+            background: rgba(212, 165, 116, 0.1);
+            color: #6b5344;
         }
         
         .modal {
@@ -374,15 +378,15 @@
         }
 
         .modal-content {
-            background: #fff;
-            border-radius: 8px;
-            border: 2px solid #d4a574;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 165, 116, 0.3);
             padding: 2rem;
             max-width: 400px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             position: relative;
         }
         
@@ -392,16 +396,18 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 2px;
             background: linear-gradient(90deg, #c41e3a, #d4a574, #2d5016);
-            border-radius: 8px 8px 0 0;
+            border-radius: 12px 12px 0 0;
+            opacity: 0.6;
         }
 
         .modal-header {
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 1.5rem;
-            color: #003580;
+            color: #6b5344;
+            letter-spacing: 0.3px;
         }
 
         .form-group {
@@ -413,7 +419,8 @@
             font-size: 13px;
             font-weight: 600;
             margin-bottom: 6px;
-            color: #2c3e50;
+            color: #6b5344;
+            letter-spacing: 0.2px;
         }
 
         .form-group input,
@@ -436,22 +443,22 @@
 
         .add-task-btn {
             padding: 12px 14px;
-            background: #2d5016;
-            border: none;
-            border-radius: 4px;
+            background: rgba(107, 83, 68, 0.7);
+            border: 1px solid rgba(107, 83, 68, 0.3);
+            border-radius: 8px;
             font-size: 13px;
             color: #fff;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
             text-transform: capitalize;
             font-family: inherit;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             transition: all 0.2s;
         }
 
         .add-task-btn:hover {
-            background: #1f3710;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            background: rgba(107, 83, 68, 0.85);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
         }
 
         .loading {
@@ -464,36 +471,36 @@
 
         .sync-status {
             font-size: 13px;
-            color: #d4a574;
+            color: #8b7355;
             margin-top: 1rem;
             text-align: center;
-            font-weight: 600;
+            font-weight: 500;
             letter-spacing: 0.5px;
         }
 
         .back-btn {
             padding: 11px 20px;
-            border: none;
-            border-radius: 4px;
-            background: #2d5016;
+            border: 1px solid rgba(107, 83, 68, 0.3);
+            border-radius: 8px;
+            background: rgba(107, 83, 68, 0.7);
             cursor: pointer;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             font-family: inherit;
             color: #fff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             transition: all 0.2s;
         }
         
         .back-btn:hover {
-            background: #1f3710;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            background: rgba(107, 83, 68, 0.85);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
         }
 
         .sync-indicator {
             font-size: 12px;
-            color: #2d5016;
-            font-weight: 600;
+            color: #8b7355;
+            font-weight: 500;
             margin-left: auto;
         }
 

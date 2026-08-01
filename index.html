@@ -327,7 +327,7 @@
             border-radius: 8px;
             padding: 4px 0;
             z-index: 100;
-            min-width: 160px;
+            min-width: 200px;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
             display: none;
             margin-top: 6px;
@@ -358,6 +358,10 @@
         .move-dropdown button:hover {
             background: rgba(212, 165, 116, 0.1);
             color: #6b5344;
+        }
+        
+        .move-dropdown button[style*="background-color"] {
+            font-weight: 600;
         }
         
         .modal {
@@ -735,14 +739,24 @@
                 const dayOfWeekStr = task.dayOfWeek || 'Unassigned';
                 const mode = task.mode || 'Personal';
                 const modeClass = `mode-${mode.toLowerCase()}`;
+                const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-                let moveOptions = this.weeks.map((week, idx) => 
-                    `<button onclick="planner.moveTaskToWeek('${task.id}', ${idx})">${this.formatDateShort(week.start)}</button>`
-                ).join('');
+                let moveOptions = '';
+                
+                moveOptions += '<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; color: #6b5344; border-bottom: 1px solid rgba(212, 165, 116, 0.2);">Move within week</div>';
+                daysOfWeek.forEach(day => {
+                    const isCurrentDay = day === (task.dayOfWeek || 'Monday');
+                    moveOptions += `<button onclick="planner.moveTaskByDayOfWeek('${task.id}', '${day}')" style="background-color: ${isCurrentDay ? 'rgba(212, 165, 116, 0.15)' : 'transparent'}; font-weight: ${isCurrentDay ? '600' : '500'};"><span style="color: #8b7355;">${isCurrentDay ? '✓ ' : ''}</span>${day}</button>`;
+                });
+
+                moveOptions += '<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; color: #6b5344; border-top: 1px solid rgba(212, 165, 116, 0.2); margin-top: 4px;">Move to week</div>';
+                this.weeks.forEach((week, idx) => 
+                    moveOptions += `<button onclick="planner.moveTaskToWeek('${task.id}', ${idx})">${this.formatDateShort(week.start)}</button>`
+                );
 
                 return `
                     <div class="task-card ${modeClass} ${completedClass}" draggable="true" data-task-id="${task.id}">
-                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="planner.toggleTaskCompletion('${task.id}')" />
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} data-task-id="${task.id}" onchange="planner.toggleTaskCompletion('${task.id}'); planner.toggleDeleteButton('${task.id}')" />
                         <div class="task-content">
                             <div class="task-text">${task.text}</div>
                             <div class="task-meta">
@@ -754,7 +768,7 @@
                         <div class="task-actions">
                             <button class="task-btn" onclick="planner.editTask('${task.id}')" title="Edit">✎</button>
                             <button class="task-btn" onclick="planner.toggleMoveMenu('${task.id}')" title="Move">⇄</button>
-                            <button class="task-btn danger" onclick="planner.deleteTask('${task.id}')" title="Delete">✕</button>
+                            <button class="task-btn danger" id="delete-btn-${task.id}" onclick="planner.deleteTask('${task.id}')" title="Delete" style="display: none; color: #e74c3c;">✕</button>
                             <div class="move-dropdown" id="move-dropdown-${task.id}">${moveOptions}</div>
                         </div>
                     </div>
@@ -787,9 +801,17 @@
 
             getTasksForWeek(weekStart) {
                 const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
-                return this.tasks.filter(task => {
+                const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                
+                const weekTasks = this.tasks.filter(task => {
                     const taskDate = new Date(task.date);
                     return taskDate >= weekStart && taskDate < weekEnd;
+                });
+
+                return weekTasks.sort((a, b) => {
+                    const dayA = a.dayOfWeek || 'Monday';
+                    const dayB = b.dayOfWeek || 'Monday';
+                    return dayOrder.indexOf(dayA) - dayOrder.indexOf(dayB);
                 });
             }
 
@@ -838,7 +860,19 @@
                     try {
                         await db.collection(TASKS_COLLECTION).doc(taskId).update({ date: dateString });
                     } catch (error) {
-                        this.showError('Failed to move task: ' + error.message);
+                        this.showError('Failed to move activity: ' + error.message);
+                    }
+                }
+            }
+
+            async moveTaskByDayOfWeek(taskId, dayOfWeek) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) {
+                    this.updateSyncStatus('🔄 Updating...');
+                    try {
+                        await db.collection(TASKS_COLLECTION).doc(taskId).update({ dayOfWeek: dayOfWeek });
+                    } catch (error) {
+                        this.showError('Failed to move activity: ' + error.message);
                     }
                 }
             }
@@ -968,6 +1002,14 @@
                     } catch (error) {
                         this.showError('Failed to update task: ' + error.message);
                     }
+                }
+            }
+
+            toggleDeleteButton(taskId) {
+                const deleteBtn = document.getElementById(`delete-btn-${taskId}`);
+                const checkbox = document.querySelector(`input[data-task-id="${taskId}"]`);
+                if (deleteBtn && checkbox) {
+                    deleteBtn.style.display = checkbox.checked ? 'block' : 'none';
                 }
             }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Planner</title>
+    <title>Memories Diary</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <style>
@@ -15,7 +15,9 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #e6f2f8 0%, #e8f7fa 100%);
+            background: linear-gradient(135deg, rgba(230, 242, 248, 0.95) 0%, rgba(232, 247, 250, 0.95) 100%), 
+                        url('trees.jpeg') center/cover no-repeat fixed;
+            background-attachment: fixed;
             color: #2c3e50;
             line-height: 1.6;
             padding: 2rem;
@@ -241,19 +243,14 @@
             cursor: grabbing;
         }
 
-        .task-card.priority-high {
-            border-left: 4px solid #c41e3a;
-            background: linear-gradient(90deg, #fff 0%, #ffe8eb 100%);
+        .task-card.mode-together {
+            border-left: 4px solid #d4639a;
+            background: linear-gradient(90deg, #fff 0%, #fce8f3 100%);
         }
 
-        .task-card.priority-medium {
+        .task-card.mode-personal {
             border-left: 4px solid #d4a574;
-            background: linear-gradient(90deg, #fff 0%, #fdf4ed 100%);
-        }
-
-        .task-card.priority-low {
-            border-left: 4px solid #2d5016;
-            background: linear-gradient(90deg, #fff 0%, #f0f8e8 100%);
+            background: linear-gradient(90deg, #fff 0%, #fef9e8 100%);
         }
 
         .task-card.completed {
@@ -299,6 +296,13 @@
             background: transparent;
             cursor: pointer;
             font-size: 14px;
+            color: #2d5016;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .task-btn:hover {
+            color: #1f3710;
         }
 
         .task-checkbox {
@@ -505,7 +509,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📅 Weekly Planner</h1>
+        <h1>📔 Memories Diary</h1>
         <div class="sync-status" id="syncStatus">🔄 Syncing with database...</div>
         <div id="errorMessage"></div>
         <div id="app"><div class="loading">Loading...</div></div>
@@ -513,19 +517,18 @@
 
     <div id="taskModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">Add New Task</div>
+            <div class="modal-header">Add New Activity</div>
             
             <div class="form-group">
-                <label>Task name</label>
-                <input type="text" id="taskName" placeholder="What do you need to do?" />
+                <label>Activity</label>
+                <input type="text" id="taskName" placeholder="What activity do you want to remember?" />
             </div>
 
             <div class="form-group">
-                <label>Priority</label>
-                <select id="taskPriority">
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
+                <label>Mode</label>
+                <select id="taskMode">
+                    <option value="Personal">Personal</option>
+                    <option value="Together">Together</option>
                 </select>
             </div>
 
@@ -549,7 +552,7 @@
 
             <div class="modal-actions">
                 <button onclick="planner.closeModal()">Cancel</button>
-                <button class="primary" onclick="planner.saveNewTask()">Add Task</button>
+                <button class="primary" onclick="planner.saveNewTask()">Add Activity</button>
             </div>
         </div>
     </div>
@@ -712,7 +715,7 @@
 
                 html += `
                         </div>
-                        <button class="add-task-btn" onclick="planner.openModal(new Date('${week.start.toISOString()}'))">+ Add task</button>
+                        <button class="add-task-btn" onclick="planner.openModal(new Date('${week.start.toISOString()}'))">+ Add activity</button>
                     </div>
                 `;
 
@@ -722,18 +725,20 @@
             renderTaskCard(task, weekIdx) {
                 const completedClass = task.completed ? 'completed' : '';
                 const dayOfWeekStr = task.dayOfWeek || 'Unassigned';
+                const mode = task.mode || 'Personal';
+                const modeClass = `mode-${mode.toLowerCase()}`;
 
                 let moveOptions = this.weeks.map((week, idx) => 
                     `<button onclick="planner.moveTaskToWeek('${task.id}', ${idx})">${this.formatDateShort(week.start)}</button>`
                 ).join('');
 
                 return `
-                    <div class="task-card priority-${task.priority} ${completedClass}" draggable="true" data-task-id="${task.id}">
+                    <div class="task-card ${modeClass} ${completedClass}" draggable="true" data-task-id="${task.id}">
                         <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="planner.toggleTaskCompletion('${task.id}')" />
                         <div class="task-content">
                             <div class="task-text">${task.text}</div>
                             <div class="task-meta">
-                                <span>${this.priorityLabel(task.priority)}</span>
+                                <span>${mode}</span>
                                 <span>📅 ${dayOfWeekStr}</span>
                             </div>
                             ${task.notes ? `<div style="margin-top: 8px; font-size: 12px; color: #7f8c8d; font-style: italic; max-height: 60px; overflow: hidden;">${task.notes}</div>` : ''}
@@ -748,51 +753,35 @@
                 `;
             }
 
-            priorityLabel(priority) {
-                const labels = { 'high': 'High', 'medium': 'Medium', 'low': 'Low' };
-                return labels[priority] || 'Medium';
-            }
+
 
             getWeeksForMonth(date) {
                 const year = date.getFullYear();
                 const month = date.getMonth();
+                const weeks = [];
+                
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
                 
-                const weeks = [];
-                let currentWeekStart = new Date(firstDay);
-                currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+                let currentMonday = new Date(firstDay);
+                const dayOfWeek = currentMonday.getDay();
+                const diff = currentMonday.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+                currentMonday.setDate(diff);
 
-                while (currentWeekStart <= lastDay) {
-                    const weekEnd = new Date(currentWeekStart);
-                    weekEnd.setDate(weekEnd.getDate() + 6);
-                    weeks.push({
-                        start: new Date(currentWeekStart),
-                        end: weekEnd,
-                    });
-                    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+                while (currentMonday <= lastDay) {
+                    const weekEnd = new Date(currentMonday.getTime() + 6 * 24 * 60 * 60 * 1000);
+                    weeks.push({ start: new Date(currentMonday), end: weekEnd });
+                    currentMonday.setDate(currentMonday.getDate() + 7);
                 }
 
-                return weeks.slice(0, 5);
+                return weeks.length > 0 ? weeks : [{ start: new Date(firstDay), end: lastDay }];
             }
 
             getTasksForWeek(weekStart) {
-                const weekStartDate = new Date(weekStart);
-                weekStartDate.setHours(0, 0, 0, 0);
-                
-                const weekEndDate = new Date(weekStart);
-                weekEndDate.setDate(weekEndDate.getDate() + 7);
-                weekEndDate.setHours(0, 0, 0, 0);
-
-                return this.tasks.filter((task) => {
-                    const [year, month, day] = task.date.split('-').map(Number);
-                    const taskDate = new Date(year, month - 1, day);
-                    taskDate.setHours(0, 0, 0, 0);
-                    
-                    return taskDate >= weekStartDate && taskDate < weekEndDate;
-                }).sort((a, b) => {
-                    const priorityOrder = { high: 0, medium: 1, low: 2 };
-                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+                return this.tasks.filter(task => {
+                    const taskDate = new Date(task.date);
+                    return taskDate >= weekStart && taskDate < weekEnd;
                 });
             }
 
@@ -855,7 +844,7 @@
             closeModal() {
                 document.getElementById('taskModal').classList.remove('active');
                 document.getElementById('taskName').value = '';
-                document.getElementById('taskPriority').value = 'medium';
+                document.getElementById('taskMode').value = 'Personal';
                 document.getElementById('taskDayOfWeek').value = 'Monday';
                 document.getElementById('taskNotes').value = '';
                 this.pendingWeekStart = null;
@@ -863,12 +852,12 @@
 
             async saveNewTask() {
                 const name = document.getElementById('taskName').value.trim();
-                const priority = document.getElementById('taskPriority').value;
+                const mode = document.getElementById('taskMode').value;
                 const dayOfWeek = document.getElementById('taskDayOfWeek').value;
                 const notes = document.getElementById('taskNotes').value.trim();
 
                 if (!name) {
-                    alert('Please enter a task name');
+                    alert('Please enter an activity name');
                     return;
                 }
 
@@ -880,7 +869,7 @@
                 const newTask = {
                     date: dateString,
                     text: name,
-                    priority: priority,
+                    mode: mode,
                     dayOfWeek: dayOfWeek,
                     notes: notes || null,
                     completed: false,
@@ -892,7 +881,7 @@
                     await db.collection(TASKS_COLLECTION).add(newTask);
                     this.closeModal();
                 } catch (error) {
-                    this.showError('Failed to save task: ' + error.message);
+                    this.showError('Failed to save activity: ' + error.message);
                 }
             }
 
@@ -900,14 +889,14 @@
                 const task = this.tasks.find(t => t.id === taskId);
                 if (task) {
                     document.getElementById('taskName').value = task.text;
-                    document.getElementById('taskPriority').value = task.priority;
+                    document.getElementById('taskMode').value = task.mode || 'Personal';
                     document.getElementById('taskDayOfWeek').value = task.dayOfWeek || 'Monday';
                     document.getElementById('taskNotes').value = task.notes || '';
                     
                     this.pendingWeekStart = new Date(task.date);
                     
                     const modal = document.getElementById('taskModal');
-                    modal.querySelector('.modal-header').textContent = 'Edit Task';
+                    modal.querySelector('.modal-header').textContent = 'Edit Activity';
                     const btn = modal.querySelector('.primary');
                     btn.textContent = 'Save Changes';
                     btn.onclick = () => this.saveEditedTask(taskId);
@@ -919,12 +908,12 @@
 
             async saveEditedTask(taskId) {
                 const name = document.getElementById('taskName').value.trim();
-                const priority = document.getElementById('taskPriority').value;
+                const mode = document.getElementById('taskMode').value;
                 const dayOfWeek = document.getElementById('taskDayOfWeek').value;
                 const notes = document.getElementById('taskNotes').value.trim();
 
                 if (!name) {
-                    alert('Please enter a task name');
+                    alert('Please enter an activity name');
                     return;
                 }
 
@@ -932,20 +921,20 @@
                 try {
                     await db.collection(TASKS_COLLECTION).doc(taskId).update({
                         text: name,
-                        priority: priority,
+                        mode: mode,
                         dayOfWeek: dayOfWeek,
                         notes: notes || null
                     });
                 } catch (error) {
-                    this.showError('Failed to update task: ' + error.message);
+                    this.showError('Failed to update activity: ' + error.message);
                 }
 
                 this.closeModal();
                 
                 const modal = document.getElementById('taskModal');
-                modal.querySelector('.modal-header').textContent = 'Add New Task';
+                modal.querySelector('.modal-header').textContent = 'Add New Activity';
                 const btn = modal.querySelector('.primary');
-                btn.textContent = 'Add Task';
+                btn.textContent = 'Add Activity';
                 btn.onclick = () => this.saveNewTask();
             }
 

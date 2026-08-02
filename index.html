@@ -527,19 +527,7 @@
         <div id="app"><div class="loading">Loading...</div></div>
     </div>
 
-    <div id="deleteConfirmModal" class="modal">
-        <div class="modal-content" style="max-width: 350px;">
-            <div class="modal-header" style="color: #e74c3c;">⚠️ Delete Activity</div>
-            <p style="margin: 1rem 0; color: #6b5344; line-height: 1.6;">
-                Are you sure you want to delete this activity? <strong>This action cannot be undone.</strong>
-            </p>
-            <div id="deleteActivityName" style="padding: 12px; background: rgba(212, 165, 116, 0.1); border-radius: 6px; margin-bottom: 1rem; color: #6b5344; font-weight: 600; font-size: 13px;"></div>
-            <div class="modal-actions">
-                <button onclick="planner.cancelDelete()" style="background: rgba(107, 83, 68, 0.5); border: 1px solid rgba(107, 83, 68, 0.3);">Keep Activity</button>
-                <button class="primary" onclick="planner.confirmDelete()" style="background: rgba(231, 76, 60, 0.85); border: 1px solid rgba(231, 76, 60, 0.5);">Delete Permanently</button>
-            </div>
-        </div>
-    </div>
+    <div id="taskModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">Add New Activity</div>
             
@@ -603,7 +591,6 @@
                 this.tasks = [];
                 this.draggedTaskId = null;
                 this.pendingWeekStart = null;
-                this.pendingDeleteTaskId = null;
                 this.weeks = [];
                 this.unsubscribe = null;
                 this.isLoading = true;
@@ -993,29 +980,13 @@
                 btn.onclick = () => this.saveNewTask();
             }
 
-            deleteTask(taskId) {
-                const task = this.tasks.find(t => t.id === taskId);
-                if (task) {
-                    this.pendingDeleteTaskId = taskId;
-                    document.getElementById('deleteActivityName').textContent = `"${task.text}"`;
-                    document.getElementById('deleteConfirmModal').classList.add('active');
-                }
-            }
-
-            cancelDelete() {
-                document.getElementById('deleteConfirmModal').classList.remove('active');
-                this.pendingDeleteTaskId = null;
-            }
-
-            async confirmDelete() {
-                if (this.pendingDeleteTaskId) {
+            async deleteTask(taskId) {
+                if (confirm('Delete this task?')) {
                     this.updateSyncStatus('🔄 Deleting...');
                     try {
-                        await db.collection(TASKS_COLLECTION).doc(this.pendingDeleteTaskId).delete();
-                        document.getElementById('deleteConfirmModal').classList.remove('active');
-                        this.pendingDeleteTaskId = null;
+                        await db.collection(TASKS_COLLECTION).doc(taskId).delete();
                     } catch (error) {
-                        this.showError('Failed to delete activity: ' + error.message);
+                        this.showError('Failed to delete task: ' + error.message);
                     }
                 }
             }

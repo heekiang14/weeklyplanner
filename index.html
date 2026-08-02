@@ -565,6 +565,7 @@
             <div class="modal-actions">
                 <button onclick="planner.closeModal()">Cancel</button>
                 <button class="primary" onclick="planner.saveNewTask()">Add Activity</button>
+                <button class="primary" id="modal-delete-btn" onclick="planner.deleteTask()" style="display: none; background: rgba(231, 76, 60, 0.85); border: 1px solid rgba(231, 76, 60, 0.5);">Delete Activity</button>
             </div>
         </div>
     </div>
@@ -591,6 +592,7 @@
                 this.tasks = [];
                 this.draggedTaskId = null;
                 this.pendingWeekStart = null;
+                this.editingTaskId = null;
                 this.weeks = [];
                 this.unsubscribe = null;
                 this.isLoading = true;
@@ -756,7 +758,7 @@
 
                 return `
                     <div class="task-card ${modeClass} ${completedClass}" draggable="true" data-task-id="${task.id}">
-                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} data-task-id="${task.id}" onchange="planner.toggleTaskCompletion('${task.id}'); planner.toggleDeleteButton('${task.id}')" />
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="planner.toggleTaskCompletion('${task.id}')" />
                         <div class="task-content">
                             <div class="task-text">${task.text}</div>
                             <div class="task-meta">
@@ -768,7 +770,6 @@
                         <div class="task-actions">
                             <button class="task-btn" onclick="planner.editTask('${task.id}')" title="Edit">✎</button>
                             <button class="task-btn" onclick="planner.toggleMoveMenu('${task.id}')" title="Move">⇄</button>
-                            <button class="task-btn danger" id="delete-btn-${task.id}" onclick="planner.deleteTask('${task.id}')" title="Delete" style="display: none; color: #e74c3c;">✕</button>
                             <div class="move-dropdown" id="move-dropdown-${task.id}">${moveOptions}</div>
                         </div>
                     </div>
@@ -879,7 +880,24 @@
 
             openModal(weekStart) {
                 this.pendingWeekStart = weekStart;
-                document.getElementById('taskModal').classList.add('active');
+                this.editingTaskId = null;
+                
+                // Reset modal for new activity
+                const modal = document.getElementById('taskModal');
+                modal.querySelector('.modal-header').textContent = 'Add New Activity';
+                const btn = modal.querySelector('.primary:not(#modal-delete-btn)');
+                if (btn) {
+                    btn.textContent = 'Add Activity';
+                    btn.onclick = () => this.saveNewTask();
+                }
+                
+                // Hide delete button
+                const deleteBtn = document.getElementById('modal-delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.style.display = 'none';
+                }
+                
+                modal.classList.add('active');
                 document.getElementById('taskName').focus();
             }
 
@@ -890,6 +908,13 @@
                 document.getElementById('taskDayOfWeek').value = 'Monday';
                 document.getElementById('taskNotes').value = '';
                 this.pendingWeekStart = null;
+                this.editingTaskId = null;
+                
+                // Hide delete button
+                const deleteBtn = document.getElementById('modal-delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.style.display = 'none';
+                }
             }
 
             async saveNewTask() {
@@ -936,12 +961,19 @@
                     document.getElementById('taskNotes').value = task.notes || '';
                     
                     this.pendingWeekStart = new Date(task.date);
+                    this.editingTaskId = taskId;
                     
                     const modal = document.getElementById('taskModal');
                     modal.querySelector('.modal-header').textContent = 'Edit Activity';
                     const btn = modal.querySelector('.primary');
                     btn.textContent = 'Save Changes';
                     btn.onclick = () => this.saveEditedTask(taskId);
+                    
+                    // Show delete button in modal
+                    const deleteBtn = document.getElementById('modal-delete-btn');
+                    if (deleteBtn) {
+                        deleteBtn.style.display = 'block';
+                    }
                     
                     modal.classList.add('active');
                     document.getElementById('taskName').focus();
@@ -975,18 +1007,27 @@
                 
                 const modal = document.getElementById('taskModal');
                 modal.querySelector('.modal-header').textContent = 'Add New Activity';
-                const btn = modal.querySelector('.primary');
-                btn.textContent = 'Add Activity';
-                btn.onclick = () => this.saveNewTask();
+                const btn = modal.querySelector('.primary:not(#modal-delete-btn)');
+                if (btn) {
+                    btn.textContent = 'Add Activity';
+                    btn.onclick = () => this.saveNewTask();
+                }
             }
 
-            async deleteTask(taskId) {
-                if (confirm('Delete this task?')) {
+            async deleteTask() {
+                if (!this.editingTaskId) return;
+                
+                const task = this.tasks.find(t => t.id === this.editingTaskId);
+                if (!task) return;
+                
+                const confirmed = confirm(`Are you sure you want to delete "${task.text}"? This cannot be undone.`);
+                if (confirmed) {
                     this.updateSyncStatus('🔄 Deleting...');
                     try {
-                        await db.collection(TASKS_COLLECTION).doc(taskId).delete();
+                        await db.collection(TASKS_COLLECTION).doc(this.editingTaskId).delete();
+                        this.closeModal();
                     } catch (error) {
-                        this.showError('Failed to delete task: ' + error.message);
+                        this.showError('Failed to delete activity: ' + error.message);
                     }
                 }
             }
@@ -1002,14 +1043,6 @@
                     } catch (error) {
                         this.showError('Failed to update task: ' + error.message);
                     }
-                }
-            }
-
-            toggleDeleteButton(taskId) {
-                const deleteBtn = document.getElementById(`delete-btn-${taskId}`);
-                const checkbox = document.querySelector(`input[data-task-id="${taskId}"]`);
-                if (deleteBtn && checkbox) {
-                    deleteBtn.style.display = checkbox.checked ? 'block' : 'none';
                 }
             }
 
